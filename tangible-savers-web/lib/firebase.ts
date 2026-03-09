@@ -15,16 +15,33 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-1P2H00J8LV",
 };
 
-// Initialize Firebase Client Apps
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase Client Apps - prevent duplicate initialization
+let app;
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+} catch (error) {
+  console.error('Firebase initialization error:', error);
+  // Create a fallback app with minimal config
+  app = initializeApp(firebaseConfig);
+}
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // Initialize analytics only in the browser (guard for SSR)
+// and handle errors gracefully
 let analytics: ReturnType<typeof getAnalytics> | null = null;
 if (typeof window !== 'undefined') {
   try {
-    analytics = getAnalytics(app);
+    // Delay analytics initialization to not block the main thread
+    setTimeout(() => {
+      try {
+        analytics = getAnalytics(app);
+      } catch (_err) {
+        // Analytics may fail in some environments; ignore silently
+        console.warn('Analytics initialization failed:', _err);
+      }
+    }, 2000);
   } catch (_err) {
     // Analytics may fail in some environments; ignore silently
   }
