@@ -34,7 +34,7 @@ const PiScriptLoader: React.FC = () => {
     <>
       <Script
         src="https://sdk.minepi.com/pi-sdk.js"
-        strategy="beforeInteractive"
+        strategy="afterInteractive"
         onLoad={() => {
           // Wait for Pi to be available
           const waitForPi = () => {

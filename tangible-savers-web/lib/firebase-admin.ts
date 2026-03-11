@@ -3,7 +3,7 @@
 // Do NOT import this file in client components!
 
 import * as admin from 'firebase-admin';
-import serviceAccount from '../tangible-savers-web-firebase-fbsvc-3b6fdfff5b.json';
+import serviceAccount from './tangible-savers-web-firebase-fbsvc-3b6fdfff5b.json';
 
 // Firebase Admin SDK setup - Server-side only
 let adminApp: admin.app.App | null = null;
