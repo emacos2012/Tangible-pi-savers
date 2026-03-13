@@ -2,11 +2,9 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut, signInAnonymously } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { User, AuthContextType, UserRole } from '@/lib/types';
 import { authenticateWithPiSDK, authenticateAdminWithPiSDK, syncUserWithFirebase, getUserProfile, updateUserProfile, initializePiSDK } from '@/lib/piAuth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { db } from './firebase';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -39,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Give the script a moment to load first
     const timeoutId = setTimeout(initPiWhenReady, 1000);
     
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(getFirebaseAuth(), async (firebaseUser) => {
       try {
         if (firebaseUser) {
           console.log('Firebase user authenticated:', firebaseUser.uid);
@@ -89,8 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Authenticate with Pi SDK
       const { piUid, username } = await authenticateWithPiSDK();
 
-      // Sign in anonymously to Firebase (or use custom auth)
-      const firebaseUser = await signInAnonymously(auth);
+// Sign in anonymously to Firebase (
 
       // Sync with Firebase and Firestore
       const userProfile = await syncUserWithFirebase(firebaseUser.user, piUid, username);
